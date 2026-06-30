@@ -52,6 +52,15 @@ ggplot(samples |> slice(1:100), aes(y = trial)) +
   theme_minimal()
 ```
 
+```{r}
+set.seed(10)
+biased_sample <- shaming |>
+  mutate(wt = if_else(age > 40, 3, 1)) |>
+  slice_sample(n = 50, weight_by = wt)
+head(biased_sample |> select(age, primary_06, sex))
+```
+
+
 
 
 
