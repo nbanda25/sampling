@@ -57,8 +57,25 @@ set.seed(10)
 biased_sample <- shaming |>
   mutate(wt = if_else(age > 40, 3, 1)) |>
   slice_sample(n = 50, weight_by = wt)
-head(biased_sample |> select(age, primary_06, sex))
+
+set.seed(11)
+unbiased_sample <- shaming |> slice_sample(n = 50)
+
+bind_rows(
+  biased_sample   |> mutate(origin = "Biased (age > 40 weighted 3x)"),
+  unbiased_sample |> mutate(origin = "Unbiased")
+) |>
+  ggplot(aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "grey50", color = "white") +
+  facet_wrap(~ origin) +
+  labs(title = "Age distribution: biased vs. unbiased samples of 50",
+       subtitle = "The biased sample is visibly skewed toward older voters",
+       x = "Age (years)", y = NULL) +
+  theme_minimal() +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 ```
+
 
 
 
