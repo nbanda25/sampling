@@ -11,13 +11,15 @@ execute:
 #| message: false
 library(tidyverse)
 library(primer.data)
+
+truth <- mean(shaming$age, na.rm = TRUE)
 ```
+
 
 A census measures every unit in a population — and it is usually too expensive, and often impossible: any population that reaches into the future can never be fully counted. So almost all of data science works instead from a sample and reasons back to the population. How much we can trust that reasoning is the subject of this tutorial.
 
 ```{r}
-truth <- mean(shaming$age, na.rm = TRUE)
-
+#| cache: true
 set.seed(10)
 samples <- tibble(trial = 1:1000) |>
   mutate(
@@ -28,19 +30,30 @@ samples <- tibble(trial = 1:1000) |>
     upper       = sample_mean + 1.96 * sample_se
   ) |>
   select(-sample)
+```
 
+```{r}
+samples |>
+  summarise(coverage = mean(lower < truth & upper > truth))
+```
+
+```{r}
 ggplot(samples |> slice(1:100), aes(y = trial)) +
   geom_errorbarh(aes(xmin = lower, xmax = upper),
                  height = 0.3, alpha = 0.5) +
   geom_point(aes(x = sample_mean), size = 0.6) +
   geom_vline(xintercept = truth, color = "red",
              linetype = "dashed") +
-  labs(title = "100 samples of 50 voters each",
-       subtitle = "Most 95% intervals contain the truth; a few miss",
+  labs(title = "100 unbiased samples of 50 voters each",
+       subtitle = "About 95% of the intervals contain the truth",
        x = "Age (years)",
-       y = "Sample number") +
+       y = "Sample number",
+       caption = "Source: Gerber, Green, Larimer 2008 via primer.data::shaming") +
   theme_minimal()
 ```
+
+
+
 
 
 
