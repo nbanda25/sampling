@@ -1,0 +1,16 @@
+---
+title: "Sampling"
+author: "nbanda25"
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(tidyverse)
+library(primer.data)
+```
+
+A census measures every unit in a population — and it is usually too expensive, and often impossible: any population that reaches into the future can never be fully counted. So almost all of data science works instead from a sample and reasons back to the population. How much we can trust that reasoning is the subject of this tutorial.
