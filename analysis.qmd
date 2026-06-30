@@ -64,19 +64,8 @@ biased_samples <- tibble(trial = 1:1000) |>
     upper       = sample_mean + 1.96 * sample_se
   ) |>
   select(-sample)
-
-ggplot(biased_samples |> slice(1:100), aes(y = trial)) +
-  geom_errorbarh(aes(xmin = lower, xmax = upper),
-                 height = 0.3, alpha = 0.5) +
-  geom_point(aes(x = sample_mean), size = 0.6) +
-  geom_vline(xintercept = truth, color = "red",
-             linetype = "dashed") +
-  labs(title = "100 biased samples of 50 voters each",
-       subtitle = "Most 95% intervals sit to the RIGHT of the truth",
-       x = "Age (years)",
-       y = "Sample number") +
-  theme_minimal()
 ```
+
 
 
 
