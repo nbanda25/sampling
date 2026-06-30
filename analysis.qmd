@@ -68,9 +68,20 @@ biased_samples <- tibble(trial = 1:1000) |>
 ```
 
 ```{r}
-biased_samples |>
-  summarise(coverage = mean(lower < truth & upper > truth))
+ggplot(biased_samples, aes(x = sample_mean)) +
+  geom_density(fill = "grey70", color = "grey30") +
+  geom_vline(xintercept = truth, color = "red",
+             linetype = "dashed") +
+  geom_vline(xintercept = mean(biased_samples$sample_mean)) +
+  labs(title = "Distribution of 1,000 biased sample means",
+       subtitle = "Black: average of biased means. Red dashed: truth.",
+       x = "Sample mean of age (years)",
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 ```
+
 
 
 
