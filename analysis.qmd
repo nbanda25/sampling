@@ -54,13 +54,30 @@ ggplot(samples |> slice(1:100), aes(y = trial)) +
 
 ```{r}
 set.seed(10)
-biased_sample <- shaming |>
-  mutate(wt = if_else(age > 40, 3, 1)) |>
-  slice_sample(n = 50, weight_by = wt)
+shaming_wt <- shaming |> mutate(wt = if_else(age > 40, 3, 1))
+biased_samples <- tibble(trial = 1:1000) |>
+  mutate(
+    sample      = map(trial, ~ shaming_wt |> slice_sample(n = 50, weight_by = wt)),
+    sample_mean = map_dbl(sample, ~ mean(.x$age, na.rm = TRUE)),
+    sample_se   = map_dbl(sample, ~ sd(.x$age, na.rm = TRUE) / sqrt(50)),
+    lower       = sample_mean - 1.96 * sample_se,
+    upper       = sample_mean + 1.96 * sample_se
+  ) |>
+  select(-sample)
 
-mean(biased_sample$age, na.rm = TRUE)
-sd(biased_sample$age, na.rm = TRUE) / sqrt(50)
+ggplot(biased_samples |> slice(1:100), aes(y = trial)) +
+  geom_errorbarh(aes(xmin = lower, xmax = upper),
+                 height = 0.3, alpha = 0.5) +
+  geom_point(aes(x = sample_mean), size = 0.6) +
+  geom_vline(xintercept = truth, color = "red",
+             linetype = "dashed") +
+  labs(title = "100 biased samples of 50 voters each",
+       subtitle = "Most 95% intervals sit to the RIGHT of the truth",
+       x = "Age (years)",
+       y = "Sample number") +
+  theme_minimal()
 ```
+
 
 
 
