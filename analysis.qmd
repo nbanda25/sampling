@@ -67,6 +67,12 @@ biased_samples <- tibble(trial = 1:1000) |>
   select(-sample)
 ```
 
+```{r}
+biased_samples |>
+  summarise(coverage = mean(lower < truth & upper > truth))
+```
+
+
 
 
 
