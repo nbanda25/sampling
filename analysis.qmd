@@ -17,7 +17,30 @@ A census measures every unit in a population — and it is usually too expensive
 
 ```{r}
 truth <- mean(shaming$age, na.rm = TRUE)
-truth
+
+set.seed(10)
+samples <- tibble(trial = 1:1000) |>
+  mutate(
+    sample      = map(trial, ~ shaming |> slice_sample(n = 50)),
+    sample_mean = map_dbl(sample, ~ mean(.x$age, na.rm = TRUE)),
+    sample_se   = map_dbl(sample, ~ sd(.x$age, na.rm = TRUE) / sqrt(50)),
+    lower       = sample_mean - 1.96 * sample_se,
+    upper       = sample_mean + 1.96 * sample_se
+  ) |>
+  select(-sample)
+
+ggplot(samples |> slice(1:100), aes(y = trial)) +
+  geom_errorbarh(aes(xmin = lower, xmax = upper),
+                 height = 0.3, alpha = 0.5) +
+  geom_point(aes(x = sample_mean), size = 0.6) +
+  geom_vline(xintercept = truth, color = "red",
+             linetype = "dashed") +
+  labs(title = "100 samples of 50 voters each",
+       subtitle = "Most 95% intervals contain the truth; a few miss",
+       x = "Age (years)",
+       y = "Sample number") +
+  theme_minimal()
 ```
+
 
 
